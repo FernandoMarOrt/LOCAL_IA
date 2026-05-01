@@ -1,0 +1,12 @@
+# Modelos y binarios pesados locales
+
+archives/
+models/*.gguf
+
+# Temporales y logs
+*.log
+*.tmp
+
+# OS/Editor
+.DS_Store
+Thumbs.db

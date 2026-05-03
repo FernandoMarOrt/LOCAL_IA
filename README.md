@@ -7,10 +7,33 @@ Este repositorio contiene scripts y recursos para ejecutar un modelo de lenguaje
 Estructura del proyecto
 -----------------------
 - `arranque-qwen.sh`: Script de arranque/ejecución para lanzar el modelo con los parámetros principales.
-- `models/`: Carpeta donde se colocan los modelos en formato `.gguf` o equivalente. Ejemplo incluido: `Qwen3.5-9B-UD-Q6_K_XL.gguf`.
+- `models/`: Carpeta local donde se colocan los modelos en formato `.gguf` o equivalente (no se versionan en Git).
 - `runtime/`: Archivos binarios, compilaciones o utilidades runtime necesarias (puede variar según tu build local).
 - `docs/`: Documentación adicional y notas de conversión/uso.
 - `archives/`: (Opcional) backups o modelos antiguos.
+
+Descarga del modelo (reproducible)
+----------------------------------
+Por límites de tamaño en GitHub/Git LFS, el archivo `.gguf` no se guarda en este repo.
+
+1. Define la URL directa del modelo (o una URL temporal firmada):
+
+```bash
+export MODEL_URL="https://huggingface.co/ORG/REPO/resolve/main/Qwen3.5-9B-UD-Q6_K_XL.gguf?download=true"
+```
+
+2. Descárgalo al directorio `models/`:
+
+```bash
+./scripts/download-model.sh
+```
+
+3. (Opcional) valida checksum SHA-256:
+
+```bash
+export MODEL_SHA256="PEGA_AQUI_EL_SHA256_ESPERADO"
+./scripts/download-model.sh
+```
 
 Requisitos previos
 ------------------
@@ -20,7 +43,7 @@ Requisitos previos
 
 Uso básico (ejemplo)
 --------------------
-1. Coloca el modelo en `models/`, p. ej. `models/Qwen3.5-9B-UD-Q6_K_XL.gguf`.
+1. Descarga el modelo en `models/` con `./scripts/download-model.sh`.
 2. Ejecuta el script de arranque:
 
 ```bash
@@ -84,7 +107,8 @@ Este proyecto ya está preparado para subirlo a GitHub sin exponer variables sen
 
 - Se usa `.env` / `.env.local` para variables de entorno locales.
 - Existe `.env.example` como plantilla pública.
-- `.gitignore` excluye secretos, modelos, binarios y archivos temporales.
+- `.gitignore` excluye secretos, modelos locales y archivos temporales.
+- Los binarios de `runtime/` que superan 100 MB se versionan con Git LFS.
 
 ### Flujo recomendado
 
@@ -99,13 +123,13 @@ cp .env.example .env
 3. Verificar que Git está ignorando secretos y binarios:
 
 ```bash
-git check-ignore -v .env .env.local models runtime archives
+git check-ignore -v .env .env.local models archives
 ```
 
 Si esas carpetas ya estaban versionadas antes de crear `.gitignore`, sácalas del índice sin borrarlas de disco:
 
 ```bash
-git rm -r --cached models runtime archives
+git rm -r --cached models archives
 ```
 
 4. Confirmar qué archivos se subirán:
